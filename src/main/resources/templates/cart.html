@@ -226,6 +226,7 @@
 
             <th:block th:unless="${session.loggedInUser == null}">
                 <a href="/orders">My Orders</a>
+                <a href="/profile">My Profile</a>
                 <span style="color:var(--text-main); font-weight:600;">Welcome, <span
                         th:text="${session.loggedInUser.name}"></span></span>
                 <a href="/logout" class="btn-auth">Sign Out</a>

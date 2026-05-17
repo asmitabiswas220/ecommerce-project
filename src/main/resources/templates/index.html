@@ -251,6 +251,108 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Search & Filter Section */
+        .search-filter-section {
+            max-width: 1200px;
+            margin: -2.5rem auto 3rem;
+            padding: 0 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 1.8rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            align-items: center;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.1rem 1.5rem 1.1rem 3.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--text-main);
+            box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.05);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-pill {
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: white;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-pill:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+            transform: translateY(-1px);
+        }
+
+        .category-pill.active {
+            background: var(--text-main);
+            color: white;
+            border-color: var(--text-main);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            border: 1px dotted rgba(0,0,0,0.1);
+            grid-column: 1 / -1;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -283,10 +385,32 @@
         </div>
     </header>
 
+    <!-- 2. Search & Filter Section -->
+    <div class="search-filter-section">
+        <div class="search-panel">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" class="search-input" placeholder="Search our curated gallery..." oninput="filterProducts()">
+            </div>
+            <div class="category-pills">
+                <button class="category-pill active" data-category="all" onclick="setCategory('all')">All Items</button>
+                <button class="category-pill" data-category="decor" onclick="setCategory('decor')">Decor</button>
+                <button class="category-pill" data-category="fashion" onclick="setCategory('fashion')">Fashion</button>
+            </div>
+        </div>
+    </div>
+
     <main class="section-container">
         <h2 class="section-title">The Collection</h2>
         <div class="grid">
-            <div class="card" th:each="product : ${products}">
+            <!-- No results banner -->
+            <div id="no-results" class="no-results">
+                🎨 <br><span style="font-size:1.1rem; font-family:'Inter',sans-serif; color:var(--text-muted);">No items found matching your filters.</span>
+            </div>
+
+            <div class="card product-card" th:each="product : ${products}"
+                 th:data-category="${product.category != null ? product.category.toLowerCase() : 'decor'}"
+                 th:data-name="${product.name.toLowerCase()}">
                 <div style="overflow: hidden;">
                     <img th:src="${product.imageUrl}" alt="Product Image" class="card-img">
                 </div>
@@ -312,5 +436,54 @@
         <p>© 2026 Lumière Curations. Crafted with elegance.</p>
     </footer>
 
+    <!-- Instant Search & Category Filtering Script -->
+    <script>
+        let currentCategory = 'all';
+
+        function setCategory(categoryName) {
+            currentCategory = categoryName.toLowerCase();
+            
+            // Update active pill styling
+            const pills = document.querySelectorAll('.category-pill');
+            pills.forEach(pill => {
+                if (pill.dataset.category.toLowerCase() === currentCategory) {
+                    pill.classList.add('active');
+                } else {
+                    pill.classList.remove('active');
+                }
+            });
+
+            filterProducts();
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.product-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const name = card.dataset.name;
+                const category = card.dataset.category;
+
+                const matchesQuery = name.includes(query);
+                const matchesCategory = currentCategory === 'all' || category === currentCategory;
+
+                if (matchesQuery && matchesCategory) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Show or hide the no-results message
+            const noResults = document.getElementById('no-results');
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

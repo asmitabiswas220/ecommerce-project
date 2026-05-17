@@ -15,21 +15,37 @@ public class Product {
     private double price;
     private String description;
     private String imageUrl;
+    private String category;
 
     public Product() {
     }
 
+    // 5-argument constructor (keeps backward compatibility)
     public Product(Long id,
                    String name,
                    double price,
                    String description,
                    String imageUrl) {
-
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
+    }
+
+    // 6-argument constructor including category
+    public Product(Long id,
+                   String name,
+                   double price,
+                   String description,
+                   String imageUrl,
+                   String category) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.category = category;
     }
 
     public Long getId() {
@@ -70,5 +86,13 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

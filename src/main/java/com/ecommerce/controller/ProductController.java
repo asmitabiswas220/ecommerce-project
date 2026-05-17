@@ -20,6 +20,9 @@ public class ProductController {
     @Value("${razorpay.key-id}")
     private String razorpayKeyId;
 
+    @Value("${app.admin.emails:asmitabiswas220@gmail.com,admin@store.com}")
+    private java.util.List<String> adminEmails;
+
     private final ProductService productService;
     private final CartService cartService;
     private final com.ecommerce.service.FileStorageService fileStorageService;
@@ -43,6 +46,23 @@ public class ProductController {
         return cartService.getCartItems().stream()
                 .mapToInt(item -> item.getQuantity())
                 .sum();
+    }
+
+    @ModelAttribute("isAdmin")
+    public boolean getIsAdmin(HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return false;
+        }
+        return adminEmails.contains(user.getUsername());
+    }
+
+    private boolean checkAdmin(HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return false;
+        }
+        return adminEmails.contains(user.getUsername());
     }
 
     @GetMapping("/")
@@ -92,8 +112,10 @@ public class ProductController {
     }
 
     @GetMapping("/admin")
-    public String adminPage(Model model) {
-
+    public String adminPage(Model model, HttpSession session) {
+        if (!checkAdmin(session)) {
+            return "redirect:/";
+        }
         model.addAttribute(
                 "product",
                 new Product());
@@ -103,8 +125,11 @@ public class ProductController {
 
     @PostMapping("/add-product")
     public String addProduct(@ModelAttribute Product product,
-            @RequestParam("image") org.springframework.web.multipart.MultipartFile image) {
-
+            @RequestParam("image") org.springframework.web.multipart.MultipartFile image,
+            HttpSession session) {
+        if (!checkAdmin(session)) {
+            return "redirect:/";
+        }
         if (!image.isEmpty()) {
             String imageUrl = fileStorageService.saveFile(image);
             product.setImageUrl(imageUrl);
@@ -116,8 +141,10 @@ public class ProductController {
     }
 
     @GetMapping("/delete-product/{id}")
-    public String deleteProduct(@PathVariable Long id) {
-
+    public String deleteProduct(@PathVariable Long id, HttpSession session) {
+        if (!checkAdmin(session)) {
+            return "redirect:/";
+        }
         productService.deleteProduct(id);
 
         return "redirect:/";

@@ -217,7 +217,7 @@
                     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 ">0</span>
             </a>
-            <a href="/admin">Admin Dashboard</a>
+            <a href="/admin" th:if="${isAdmin}">Admin Dashboard</a>
 
             <th:block th:if="${session.loggedInUser == null}">
                 <a href="/login" class="btn-auth">Sign In</a>

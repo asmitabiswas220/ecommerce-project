@@ -231,7 +231,7 @@
     </div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-    <script>
+    <script th:inline="javascript">
         function checkout() {
 
             fetch("/checkout/create-order", {
@@ -241,7 +241,7 @@
                 .then(order => {
 
                     var options = {
-                        "key": "YOUR_KEY_ID",
+                        "key": [[${razorpayKeyId}]],
                         "amount": order.amount,
                         "currency": "INR",
                         "name": "Lumière Store",

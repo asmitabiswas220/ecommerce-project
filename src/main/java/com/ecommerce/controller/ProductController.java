@@ -9,12 +9,16 @@ import com.ecommerce.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class ProductController {
+
+    @Value("${razorpay.key-id}")
+    private String razorpayKeyId;
 
     private final ProductService productService;
     private final CartService cartService;
@@ -59,6 +63,9 @@ public class ProductController {
         model.addAttribute(
                 "cartItems",
                 cartService.getCartItems());
+        model.addAttribute(
+                "razorpayKeyId",
+                razorpayKeyId);
 
         return "cart";
     }

@@ -23,9 +23,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute User user) {
-        userService.register(user);
-        return "redirect:/login";
+    public String register(@ModelAttribute User user, HttpSession session) {
+        User registeredUser = userService.register(user);
+        session.setAttribute("loggedInUser", registeredUser);
+        return "redirect:/";
     }
 
     @GetMapping("/login")

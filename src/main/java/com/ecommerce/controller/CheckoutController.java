@@ -1,6 +1,7 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.model.User;
+import com.ecommerce.service.CartService;
 import com.ecommerce.service.CheckoutService;
 import com.ecommerce.service.OrderService;
 import jakarta.servlet.http.HttpSession;
@@ -15,18 +16,28 @@ public class CheckoutController {
 
     private final CheckoutService checkoutService;
     private final OrderService orderService;
+    private final CartService cartService;
 
     public CheckoutController(CheckoutService checkoutService,
-            OrderService orderService) {
+                              OrderService orderService,
+                              CartService cartService) {
         this.checkoutService = checkoutService;
         this.orderService = orderService;
+        this.cartService = cartService;
     }
 
-    // 1. Create Razorpay order
+    // 1. Create Razorpay order dynamically based on the items in the user's cart
     @PostMapping("/create-order")
     public Map<String, Object> createOrder() throws Exception {
 
-        double amount = 1000; // later we will calculate cart total dynamically
+        // Calculate dynamic total price of cart items
+        double amount = cartService.getCartItems().stream()
+                .mapToDouble(item -> item.getPrice())
+                .sum();
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Cart cannot be empty for checkout!");
+        }
 
         var razorOrder = checkoutService.createRazorpayOrder(amount);
 
@@ -40,11 +51,11 @@ public class CheckoutController {
     // 2. After payment success
     @PostMapping("/confirm")
     public String confirmPayment(@RequestBody Map<String, String> data,
-            HttpSession session) {
+                                 HttpSession session) {
 
         User user = (User) session.getAttribute("loggedInUser");
 
-        orderService.createOrder(user); // your existing logic
+        orderService.createOrder(user);
 
         return "OK";
     }

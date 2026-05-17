@@ -30,9 +30,9 @@ public class CheckoutController {
     @PostMapping("/create-order")
     public Map<String, Object> createOrder() throws Exception {
 
-        // Calculate dynamic total price of cart items
+        // Calculate dynamic total price of cart items by multiplying price and quantity
         double amount = cartService.getCartItems().stream()
-                .mapToDouble(item -> item.getPrice())
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum();
 
         if (amount <= 0) {

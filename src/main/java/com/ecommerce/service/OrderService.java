@@ -1,5 +1,6 @@
 package com.ecommerce.service;
 
+import com.ecommerce.model.CartItem;
 import com.ecommerce.model.Order;
 import com.ecommerce.model.OrderItem;
 import com.ecommerce.model.Product;
@@ -22,7 +23,7 @@ public class OrderService {
     }
 
     public Order createOrder(User user) {
-        List<Product> cartItems = cartService.getCartItems();
+        List<CartItem> cartItems = cartService.getCartItems();
 
         if (cartItems.isEmpty()) {
             return null;
@@ -34,13 +35,13 @@ public class OrderService {
         order.setStatus("PENDING");
 
         double total = 0;
-        for (Product p : cartItems) {
-            OrderItem item = new OrderItem();
-            item.setProduct(p);
-            item.setPrice(p.getPrice());
-            item.setQuantity(1); // Default to 1 for this simple cart
-            order.addItem(item);
-            total += p.getPrice();
+        for (CartItem item : cartItems) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProduct(item.getProduct());
+            orderItem.setPrice(item.getProduct().getPrice());
+            orderItem.setQuantity(item.getQuantity());
+            order.addItem(orderItem);
+            total += item.getProduct().getPrice() * item.getQuantity();
         }
 
         order.setTotalAmount(total);

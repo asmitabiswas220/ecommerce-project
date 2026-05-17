@@ -214,13 +214,18 @@
             </div>
 
             <div class="cart-item" th:each="item : ${cartItems}">
-                <img th:src="${item.imageUrl}" alt="Item" class="cart-img">
+                <img th:src="${item.product.imageUrl}" alt="Item" class="cart-img">
                 <div class="cart-details">
-                    <h3 class="cart-title" th:text="${item.name}"></h3>
-                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;" th:text="${item.description}"></p>
-                    <div class="cart-price" th:text="'₹' + ${item.price}"></div>
+                    <h3 class="cart-title" th:text="${item.product.name}"></h3>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;" th:text="${item.product.description}"></p>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.8rem; max-width: 200px;">
+                        <div class="cart-price" th:text="'₹' + ${item.product.price}"></div>
+                        <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-muted); background: #f1f5f9; padding: 0.3rem 0.8rem; border-radius: 20px;">
+                            Qty: <span th:text="${item.quantity}"></span>
+                        </div>
+                    </div>
                 </div>
-                <form th:action="@{/remove-from-cart/{id}(id=${item.id})}" method="get">
+                <form th:action="@{/remove-from-cart/{id}(id=${item.product.id})}" method="get">
                     <button type="submit" class="btn-remove">Remove</button>
                 </form>
             </div>

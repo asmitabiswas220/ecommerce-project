@@ -35,6 +35,16 @@ public class ProductController {
         this.orderService = orderService;
     }
 
+    @ModelAttribute("cartCount")
+    public int getCartCount() {
+        if (cartService == null || cartService.getCartItems() == null) {
+            return 0;
+        }
+        return cartService.getCartItems().stream()
+                .mapToInt(item -> item.getQuantity())
+                .sum();
+    }
+
     @GetMapping("/")
     public String home(Model model) {
 

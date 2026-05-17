@@ -70,6 +70,17 @@ public class ProductController {
         return "cart";
     }
 
+    @GetMapping("/orders")
+    public String orders(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("orders", orderService.getOrdersByUser(user));
+        return "orders";
+    }
+
     @GetMapping("/admin")
     public String adminPage(Model model) {
 

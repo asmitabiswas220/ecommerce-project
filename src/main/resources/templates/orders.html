@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumière - My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fafafa;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow-sm: 0 4px 10px rgba(0,0,0,0.02);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.04);
+            --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.08);
+            --accent-gold: #c5a880;
+            --success-color: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top left, #fef3c7, transparent 40%), radial-gradient(circle at bottom right, #f3e8ff, transparent 40%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. Header & Navigation (Consistent with index.html) */
+        header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 8%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+        .logo:hover { opacity: 0.8; }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--accent-gold); }
+
+        .btn-auth {
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            border: 1px solid var(--text-main);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-auth:hover {
+            background: var(--text-main);
+            color: white !important;
+        }
+
+        /* 2. Main Page Layout */
+        .container {
+            max-width: 900px;
+            width: 90%;
+            margin: 3.5rem auto;
+            flex-grow: 1;
+        }
+
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* 3. Order Card Styles (Premium Glassmorphism) */
+        .order-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .order-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .order-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .order-ref {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .order-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .order-total {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* 4. Tracking Progress Timeline */
+        .track-container {
+            margin: 2rem 0;
+            padding: 0 1rem;
+        }
+
+        .track-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Line connecting steps */
+        .track-timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .track-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            width: 20%;
+        }
+
+        .track-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            border: 4px solid var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .track-label {
+            margin-top: 0.6rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+        }
+
+        /* Active / Complete Step Styling */
+        .step-complete .track-dot {
+            background: var(--success-color);
+            color: white;
+        }
+        .step-complete .track-label {
+            color: var(--text-main);
+        }
+
+        .step-active .track-dot {
+            background: var(--accent-gold);
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(197, 168, 128, 0.4);
+        }
+        .step-active .track-label {
+            color: var(--accent-gold);
+        }
+
+        /* 5. Product Itemized Row Grid */
+        .item-list {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px dotted var(--border);
+        }
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-product-details {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .item-image {
+            width: 65px;
+            height: 65px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .item-qty {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .item-price {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-main);
+        }
+
+        /* 6. Empty State Illustration Card */
+        .empty-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 24px;
+            padding: 4.5rem 3rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: float 4s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .empty-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .empty-text {
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: 0 auto 2.2rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .btn-shop {
+            display: inline-block;
+            padding: 1rem 2.2rem;
+            background: var(--text-main);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .btn-shop:hover {
+            background: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar { padding: 1.2rem 5%; }
+            .track-timeline::before { top: 12px; }
+            .track-dot { width: 26px; height: 26px; font-size: 0.7rem; border-width: 3px; }
+            .track-label { font-size: 0.7rem; margin-top: 0.4rem; }
+            .order-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header Navigation Bar -->
+    <header>
+        <div class="navbar">
+            <a href="/" class="logo">Lumière</a>
+            <div class="nav-links">
+                <a href="/">Gallery</a>
+                <a href="/cart">Cart</a>
+                
+                <th:block th:if="${session.loggedInUser == null}">
+                    <a href="/login" class="btn-auth">Sign In</a>
+                    <a href="/register" class="btn-auth" style="background:var(--text-main);color:white;">Register</a>
+                </th:block>
+                
+                <th:block th:unless="${session.loggedInUser == null}">
+                    <a href="/orders" style="font-weight:600; color:var(--accent-gold);">My Orders</a>
+                    <span style="color:var(--text-main); font-weight:600;">Welcome, <span th:text="${session.loggedInUser.name}"></span></span>
+                    <a href="/logout" class="btn-auth">Sign Out</a>
+                </th:block>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Main Container -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">My Orders</h1>
+            <p class="page-subtitle">Track your secure transactions and delivery timelines.</p>
+        </div>
+
+        <!-- Check if orders exist -->
+        <div th:if="${orders != null and !orders.isEmpty()}">
+            <!-- Loop through each order -->
+            <div class="order-card" th:each="order : ${orders}">
+                
+                <!-- Order Header Metadata -->
+                <div class="order-meta">
+                    <div>
+                        <div class="order-ref" th:text="'Order #' + ${order.id}">Order ID</div>
+                        <div class="order-date" th:text="${#temporals.format(order.orderDate, 'dd MMMM yyyy, hh:mm a')}">Order Date</div>
+                    </div>
+                    <div class="order-total" th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}">Total Amount</div>
+                </div>
+
+                <!-- Shipping Status Visual Timeline -->
+                <div class="track-container">
+                    <div class="track-timeline">
+                        <!-- Step 1: Ordered -->
+                        <div class="track-step step-complete">
+                            <div class="track-dot">✓</div>
+                            <div class="track-label">Ordered</div>
+                        </div>
+
+                        <!-- Step 2: Processing -->
+                        <div class="track-step" 
+                             th:classappend="${order.status == 'PENDING' ? 'step-active' : 'step-complete'}">
+                            <div class="track-dot" th:text="${order.status == 'PENDING' ? '•' : '✓'}">✓</div>
+                            <div class="track-label">Processing</div>
+                        </div>
+
+                        <!-- Step 3: Shipped -->
+                        <div class="track-step" 
+                             th:classappend="${order.status == 'SHIPPED' ? 'step-active' : (order.status == 'DELIVERED' ? 'step-complete' : '')}">
+                            <div class="track-dot" th:text="${order.status == 'SHIPPED' ? '•' : (order.status == 'DELIVERED' ? '✓' : '')}"></div>
+                            <div class="track-label">Shipped</div>
+                        </div>
+
+                        <!-- Step 4: Delivered -->
+                        <div class="track-step" 
+                             th:classappend="${order.status == 'DELIVERED' ? 'step-active step-complete' : ''}">
+                            <div class="track-dot" th:text="${order.status == 'DELIVERED' ? '✓' : ''}"></div>
+                            <div class="track-label">Delivered</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchased Items Grid -->
+                <div class="item-list">
+                    <div class="item-row" th:each="item : ${order.items}">
+                        <div class="item-product-details">
+                            <img class="item-image" th:src="${item.product.imageUrl != null ? item.product.imageUrl : '/images/placeholder.jpg'}" alt="Product Image">
+                            <div class="item-info">
+                                <span class="item-name" th:text="${item.product.name}">Product Name</span>
+                                <span class="item-qty" th:text="'Qty: ' + ${item.quantity}">Qty</span>
+                            </div>
+                        </div>
+                        <div class="item-price" th:text="'₹' + ${#numbers.formatDecimal(item.price, 1, 'COMMA', 2, 'POINT')}">Price</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Empty State Illustration Card -->
+        <div class="empty-card" th:unless="${orders != null and !orders.isEmpty()}">
+            <span class="empty-icon">🎨</span>
+            <h2 class="empty-title">Your Art Collection Awaits</h2>
+            <p class="empty-text">You haven't placed any orders yet. Discover fine, curated, handmade items waiting to adorn your space.</p>
+            <a href="/" class="btn-shop">Explore Gallery</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

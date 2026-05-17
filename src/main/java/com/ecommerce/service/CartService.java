@@ -31,4 +31,23 @@ public class CartService {
     public void removeFromCart(Long id) {
         cartItems.removeIf(item -> item.getProduct().getId().equals(id));
     }
+
+    public void incrementQuantity(Long id) {
+        for (CartItem item : cartItems) {
+            if (item.getProduct().getId().equals(id)) {
+                item.setQuantity(item.getQuantity() + 1);
+                return;
+            }
+        }
+    }
+
+    public void decrementQuantity(Long id) {
+        for (CartItem item : cartItems) {
+            if (item.getProduct().getId().equals(id)) {
+                item.setQuantity(item.getQuantity() - 1);
+                break;
+            }
+        }
+        cartItems.removeIf(item -> item.getQuantity() <= 0);
+    }
 }

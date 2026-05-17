@@ -131,6 +131,18 @@ public class ProductController {
         return "redirect:/cart";
     }
 
+    @GetMapping("/cart/increment/{id}")
+    public String incrementCartItem(@PathVariable Long id) {
+        cartService.incrementQuantity(id);
+        return "redirect:/cart";
+    }
+
+    @GetMapping("/cart/decrement/{id}")
+    public String decrementCartItem(@PathVariable Long id) {
+        cartService.decrementQuantity(id);
+        return "redirect:/cart";
+    }
+
     @PostMapping("/order/confirm")
     public String confirmPayment(@RequestBody String paymentData, HttpSession session) {
 

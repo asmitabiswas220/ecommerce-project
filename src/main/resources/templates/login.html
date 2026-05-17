@@ -126,6 +126,13 @@
         }
         .footer-link:hover { color: var(--text-main); }
         .footer-link span { font-weight: 600; color: var(--text-main); text-decoration: underline; }
+        
+        .btn-google:hover {
+            background-color: #f7f7f7 !important;
+            border-color: rgba(0,0,0,0.2) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +158,35 @@
 
             <button type="submit">Sign In</button>
         </form>
+
+        <!-- Google Login Button -->
+        <div style="margin-top: 1.5rem; text-align: center;">
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; position: relative; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span style="flex-grow: 1; height: 1px; background: rgba(0,0,0,0.1);"></span>
+                Or continue with
+                <span style="flex-grow: 1; height: 1px; background: rgba(0,0,0,0.1);"></span>
+            </p>
+            <a href="/oauth2/authorization/google" class="btn-google" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                width: 100%;
+                padding: 1.1rem;
+                background: white;
+                border: 1px solid rgba(0,0,0,0.1);
+                border-radius: 12px;
+                color: var(--text-main);
+                font-weight: 500;
+                font-size: 1rem;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            ">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" style="width:20px;height:20px;">
+                Sign In with Google
+            </a>
+        </div>
         
         <a href="/register" class="footer-link">Don't have an account? <span>Register here</span></a>
     </div>

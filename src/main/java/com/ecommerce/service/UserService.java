@@ -27,6 +27,10 @@ public class UserService {
         return userRepository.findByPhoneNumber(phoneNumber);
     }
 
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public User login(String username, String password) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isPresent()) {

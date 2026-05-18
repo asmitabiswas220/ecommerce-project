@@ -3,6 +3,8 @@ package com.ecommerce.controller;
 import com.ecommerce.model.User;
 import com.ecommerce.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,30 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage() {
         return "login";
+    }
+
+    @GetMapping("/auth/local-bypass")
+    public String localBypass(HttpSession session, HttpServletRequest request) {
+        // Safe check to verify we are only running this on localhost / local development environment
+        String serverName = request.getServerName();
+        if (!"localhost".equals(serverName) && !"127.0.0.1".equals(serverName)) {
+            return "redirect:/login";
+        }
+
+        String email = "asmitabiswas220@gmail.com";
+        String name = "Asmita Biswas (Admin)";
+
+        User user = userService.findByUsername(email)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUsername(email);
+                    newUser.setName(name);
+                    newUser.setPassword("LOCAL_BYPASS");
+                    return userService.save(newUser);
+                });
+
+        session.setAttribute("loggedInUser", user);
+        return "redirect:/?loginSuccess=true";
     }
 
     @GetMapping("/logout")

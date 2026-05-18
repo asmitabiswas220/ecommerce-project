@@ -98,6 +98,28 @@
             box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1) !important;
         }
 
+        .btn-bypass {
+            display: inline-block;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px dashed rgba(59, 130, 246, 0.3);
+            border-radius: 14px;
+            color: #2563eb;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 1.5rem;
+        }
+
+        .btn-bypass:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.15);
+        }
+
         @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(15px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -118,6 +140,11 @@
         <a href="/oauth2/authorization/google" class="btn-google">
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" style="width:22px;height:22px;">
             Continue with Google
+        </a>
+
+        <!-- Local Dev Auto-Login (Bypasses keys on localhost) -->
+        <a href="/auth/local-bypass" class="btn-bypass">
+            ⚡ Local Dev Auto-Login (Admin Bypass)
         </a>
     </div>
 

@@ -1,11 +1,11 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.model.User;
-
 import com.ecommerce.model.Product;
 import com.ecommerce.service.CartService;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.service.ProductService;
+import com.ecommerce.service.WishlistService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -27,15 +27,19 @@ public class ProductController {
     private final CartService cartService;
     private final com.ecommerce.service.FileStorageService fileStorageService;
     private final OrderService orderService;
+    private final WishlistService wishlistService;
 
     public ProductController(ProductService productService,
             CartService cartService,
-            com.ecommerce.service.FileStorageService fileStorageService, OrderService orderService) {
+            com.ecommerce.service.FileStorageService fileStorageService,
+            OrderService orderService,
+            WishlistService wishlistService) {
 
         this.productService = productService;
         this.cartService = cartService;
         this.fileStorageService = fileStorageService;
         this.orderService = orderService;
+        this.wishlistService = wishlistService;
     }
 
     @ModelAttribute("cartCount")
@@ -43,18 +47,17 @@ public class ProductController {
         if (cartService == null || cartService.getCartItems() == null) {
             return 0;
         }
-        return cartService.getCartItems().stream()
-                .mapToInt(item -> item.getQuantity())
-                .sum();
+        return cartService.getCartItems().size();
+    }
+
+    @ModelAttribute("wishlistCount")
+    public int getWishlistCount() {
+        return wishlistService.getWishlistCount();
     }
 
     @ModelAttribute("isAdmin")
-    public boolean getIsAdmin(HttpSession session) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            return false;
-        }
-        return adminEmails.contains(user.getUsername());
+    public boolean isAdmin(HttpSession session) {
+        return checkAdmin(session);
     }
 
     private boolean checkAdmin(HttpSession session) {
@@ -67,12 +70,43 @@ public class ProductController {
 
     @GetMapping("/")
     public String home(Model model) {
-
-        model.addAttribute(
-                "products",
-                productService.getAllProducts());
-
+        model.addAttribute("products", productService.getAllProducts());
+        // Pass wishlist IDs so the heart button can be pre-filled
+        java.util.Set<Long> wishlistIds = new java.util.HashSet<>();
+        wishlistService.getWishlistItems().forEach(p -> wishlistIds.add(p.getId()));
+        model.addAttribute("wishlistIds", wishlistIds);
         return "index";
+    }
+
+    @GetMapping("/product/{id}")
+    public String productDetail(@PathVariable Long id, Model model) {
+        Product product = productService.getProductById(id);
+        if (product == null) return "redirect:/";
+        model.addAttribute("product", product);
+        model.addAttribute("inWishlist", wishlistService.isInWishlist(id));
+        return "product-detail";
+    }
+
+    @GetMapping("/wishlist")
+    public String wishlist(Model model, HttpSession session) {
+        if (session.getAttribute("loggedInUser") == null) return "redirect:/login";
+        model.addAttribute("wishlistItems", wishlistService.getWishlistItems());
+        return "wishlist";
+    }
+
+    @GetMapping("/wishlist/add/{id}")
+    public String addToWishlist(@PathVariable Long id,
+                                @RequestParam(defaultValue="/") String redirect) {
+        Product product = productService.getProductById(id);
+        if (product != null) wishlistService.addToWishlist(product);
+        return "redirect:" + redirect;
+    }
+
+    @GetMapping("/wishlist/remove/{id}")
+    public String removeFromWishlist(@PathVariable Long id,
+                                     @RequestParam(defaultValue="/wishlist") String redirect) {
+        wishlistService.removeFromWishlist(id);
+        return "redirect:" + redirect;
     }
 
     @GetMapping("/add-to-cart/{id}")

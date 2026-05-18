@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disabled for simplicity in e-commerce AJAX posts
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/cart/**", "/add-to-cart/**", "/remove-from-cart/**", "/login", "/auth/**", "/profile", "/profile/update", "/orders", "/order/**", "/checkout/**", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                .requestMatchers("/", "/product/**", "/cart/**", "/add-to-cart/**", "/remove-from-cart/**", "/login", "/auth/**", "/wishlist", "/wishlist/**", "/profile", "/profile/update", "/orders", "/order/**", "/checkout/**", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2

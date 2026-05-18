@@ -437,6 +437,9 @@
                     </div>
 
                     <div th:if="${param.success}" class="success-banner">Profile updated successfully.</div>
+                    <div th:if="${param.error != null and param.error[0] == 'emailExists'}" class="success-banner" style="background:#fff1f3;color:#d92d55;border-color:#ffd2dc;">
+                        This email is already linked to another account.
+                    </div>
 
                     <form th:action="@{/profile/update}" method="post" class="form-grid" th:object="${user}">
                         <div class="field">

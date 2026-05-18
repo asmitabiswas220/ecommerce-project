@@ -28,12 +28,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+        String normalizedEmail = email == null ? "" : email.trim().toLowerCase();
 
         // Find existing user by username (email) or auto-register them
-        User user = userRepository.findByUsername(email)
+        User user = userRepository.findByUsernameIgnoreCase(normalizedEmail)
                 .orElseGet(() -> {
                     User newUser = new User();
-                    newUser.setUsername(email);
+                    newUser.setUsername(normalizedEmail);
                     newUser.setName(name);
                     newUser.setPassword("OAUTH2_USER"); // Placeholder password
                     return userRepository.save(newUser);

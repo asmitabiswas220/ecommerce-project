@@ -25,6 +25,7 @@ public class UserService {
     }
 
     public User save(User user) {
+        user.setUsername(normalizeUsername(user.getUsername()));
         return userRepository.save(user);
     }
 
@@ -33,11 +34,11 @@ public class UserService {
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(normalizeUsername(username));
+        return userRepository.findByUsernameIgnoreCase(normalizeUsername(username));
     }
 
     public User login(String username, String password) {
-        Optional<User> optionalUser = userRepository.findByUsername(normalizeUsername(username));
+        Optional<User> optionalUser = userRepository.findByUsernameIgnoreCase(normalizeUsername(username));
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (passwordMatches(password, user.getPassword())) {
@@ -48,7 +49,7 @@ public class UserService {
     }
 
     public boolean usernameExists(String username) {
-        return userRepository.findByUsername(normalizeUsername(username)).isPresent();
+        return userRepository.existsByUsernameIgnoreCase(normalizeUsername(username));
     }
 
     private boolean passwordMatches(String rawPassword, String storedPassword) {

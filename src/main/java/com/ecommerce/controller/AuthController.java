@@ -163,6 +163,12 @@ public class AuthController {
             return "redirect:/login";
         }
 
+        String currentEmail = user.getUsername() == null ? "" : user.getUsername().trim();
+        String requestedEmail = updatedUser.getUsername() == null ? "" : updatedUser.getUsername().trim();
+        if (!currentEmail.equalsIgnoreCase(requestedEmail) && userService.usernameExists(requestedEmail)) {
+            return "redirect:/profile?error=emailExists";
+        }
+
         user.setName(updatedUser.getName());
         user.setUsername(updatedUser.getUsername());
         user.setPhoneNumber(updatedUser.getPhoneNumber());

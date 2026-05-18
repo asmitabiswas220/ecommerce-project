@@ -78,6 +78,7 @@ public class ProductController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("categories", productService.getCategories());
         java.util.Set<Long> wishlistIds = new java.util.HashSet<>();
         wishlistService.getWishlistItems().forEach(p -> wishlistIds.add(p.getId()));
         model.addAttribute("wishlistIds", wishlistIds);

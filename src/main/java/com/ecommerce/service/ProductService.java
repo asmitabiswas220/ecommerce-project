@@ -29,6 +29,16 @@ public class ProductService {
                 .stream().limit(4).collect(Collectors.toList());
     }
 
+    public List<String> getCategories() {
+        return productRepository.findAll().stream()
+                .map(Product::getCategory)
+                .filter(category -> category != null && !category.isBlank())
+                .map(String::trim)
+                .distinct()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
+    }
+
     public void addProduct(Product product) {
         productRepository.save(product);
     }

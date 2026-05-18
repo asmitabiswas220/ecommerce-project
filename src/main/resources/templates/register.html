@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumiere - Sign In</title>
+    <title>Lumiere - Register</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -58,7 +58,7 @@
         }
 
         .auth-card {
-            width: min(440px, 100%);
+            width: min(460px, 100%);
             background: var(--surface);
             border: 1px solid rgba(255, 255, 255, 0.72);
             border-radius: var(--radius);
@@ -89,6 +89,9 @@
         }
 
         .alert {
+            background: #fff1f3;
+            color: var(--rose);
+            border: 1px solid #ffd2dc;
             border-radius: var(--radius);
             padding: 0.8rem;
             margin-bottom: 1rem;
@@ -96,10 +99,7 @@
             font-weight: 800;
         }
 
-        .alert.error { background: #fff1f3; color: var(--rose); border: 1px solid #ffd2dc; }
-        .alert.success { background: #e8f5ef; color: var(--green); border: 1px solid #cbe9de; }
-
-        .field { margin-bottom: 0.9rem; }
+        .field { margin-bottom: 0.85rem; }
         label {
             display: block;
             margin-bottom: 0.35rem;
@@ -120,40 +120,16 @@
 
         input:focus { border-color: rgba(23, 23, 23, 0.45); }
 
-        .submit-btn, .google-btn {
+        .submit-btn {
             width: 100%;
             min-height: 48px;
             border-radius: var(--radius);
             border: 1px solid var(--ink);
+            background: var(--ink);
+            color: white;
             font-weight: 900;
             cursor: pointer;
-        }
-
-        .submit-btn { background: var(--ink); color: white; margin-top: 0.35rem; }
-        .google-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.65rem;
-            background: white;
-            margin-top: 0.8rem;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: var(--muted);
-            font-size: 0.8rem;
-            font-weight: 800;
-            margin: 1rem 0;
-        }
-
-        .divider:before, .divider:after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: var(--line);
+            margin-top: 0.35rem;
         }
 
         .switch {
@@ -178,34 +154,37 @@
     </nav>
 
     <main class="auth-card">
-        <div class="eyebrow">Welcome back</div>
-        <h1>Sign in</h1>
-        <p class="subtitle">Access your wishlist, cart, profile, and orders.</p>
+        <div class="eyebrow">Join Lumiere</div>
+        <h1>Create account</h1>
+        <p class="subtitle">Save your wishlist, track orders, and checkout faster.</p>
 
-        <div class="alert error" th:if="${loginError}">Invalid email or password.</div>
-        <div class="alert success" th:if="${registered}">Account created. Please sign in.</div>
+        <div class="alert" th:if="${registerError}" th:text="${registerError}">Registration error</div>
 
-        <form action="/login" method="post">
+        <form action="/register" method="post" th:object="${user}">
+            <div class="field">
+                <label for="name">Full name</label>
+                <input id="name" th:field="*{name}" type="text" placeholder="Your name" required autocomplete="name">
+            </div>
             <div class="field">
                 <label for="username">Email</label>
-                <input id="username" name="username" type="email" placeholder="you@example.com" required autocomplete="email">
+                <input id="username" th:field="*{username}" type="email" placeholder="you@example.com" required autocomplete="email">
+            </div>
+            <div class="field">
+                <label for="phoneNumber">Phone number</label>
+                <input id="phoneNumber" th:field="*{phoneNumber}" type="tel" placeholder="Optional" autocomplete="tel">
             </div>
             <div class="field">
                 <label for="password">Password</label>
-                <input id="password" name="password" type="password" placeholder="Enter your password" required autocomplete="current-password">
+                <input id="password" th:field="*{password}" type="password" placeholder="Create a password" required autocomplete="new-password">
             </div>
-            <button class="submit-btn" type="submit">Sign In</button>
+            <div class="field">
+                <label for="confirmPassword">Confirm password</label>
+                <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Repeat password" required autocomplete="new-password">
+            </div>
+            <button class="submit-btn" type="submit">Create Account</button>
         </form>
 
-        <th:block th:if="${googleLoginEnabled}">
-            <div class="divider">or</div>
-            <a href="/oauth2/authorization/google" class="google-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="" style="width:20px;height:20px;">
-                Continue with Google
-            </a>
-        </th:block>
-
-        <p class="switch">New here? <a href="/register">Create an account</a></p>
+        <p class="switch">Already have an account? <a href="/login">Sign in</a></p>
     </main>
 </body>
 </html>

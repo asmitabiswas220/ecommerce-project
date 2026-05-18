@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumière - Sign In</title>
+    <title>Lumière - Secure Sign In</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -49,89 +49,58 @@
         .container {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
-            max-width: 450px;
+            max-width: 440px;
             width: 100%;
-            padding: 3rem;
+            padding: 3.5rem 3rem;
             border-radius: 24px;
             box-shadow: var(--shadow-lg);
             border: 1px solid rgba(255,255,255,0.4);
             text-align: center;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .page-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.4rem;
+            margin-bottom: 0.6rem;
             color: var(--text-main);
         }
         
         .subtitle {
             color: var(--text-muted);
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             font-size: 0.95rem;
+            line-height: 1.6;
         }
 
-        .form-group { margin-bottom: 1.5rem; text-align: left; }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        input {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--text-main);
-            box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.05);
-        }
-
-        button {
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
             width: 100%;
             padding: 1.2rem;
-            border: none;
-            background: var(--text-main);
-            color: white;
-            font-size: 1.1rem;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 14px;
+            color: var(--text-main);
             font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 0.5rem;
-            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
-        button:hover {
-            background: #333;
-            transform: translateY(-2px);
-        }
-        
-        .footer-link {
-            display: inline-block;
-            margin-top: 1.5rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-        }
-        .footer-link:hover { color: var(--text-main); }
-        .footer-link span { font-weight: 600; color: var(--text-main); text-decoration: underline; }
-        
         .btn-google:hover {
             background-color: #f7f7f7 !important;
-            border-color: rgba(0,0,0,0.2) !important;
+            border-color: rgba(0,0,0,0.15) !important;
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1) !important;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -142,309 +111,15 @@
     </nav>
 
     <div class="container">
-        <h1 class="page-title">Welcome Back</h1>
-        <p class="subtitle">Sign in to continue your curated experience.</p>
+        <h1 class="page-title">Curated Access</h1>
+        <p class="subtitle">A secure boutique experience. Sign in using your Google account to access your personalized profile, shopping cart, and order history.</p>
 
-        <!-- Elegant Auth Tab Toggles -->
-        <div style="display: flex; gap: 10px; margin-bottom: 1.8rem; background: rgba(0,0,0,0.03); padding: 5px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.05);">
-            <button type="button" id="tab-email" onclick="switchTab('email')" style="
-                flex: 1;
-                padding: 0.7rem;
-                font-size: 0.9rem;
-                font-weight: 600;
-                background: var(--text-main);
-                color: white;
-                border-radius: 10px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                border: none;
-                margin-top: 0;
-            ">Email Login</button>
-            <button type="button" id="tab-mobile" onclick="switchTab('mobile')" style="
-                flex: 1;
-                padding: 0.7rem;
-                font-size: 0.9rem;
-                font-weight: 600;
-                background: transparent;
-                color: var(--text-muted);
-                border-radius: 10px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                border: none;
-                margin-top: 0;
-            ">Mobile OTP</button>
-        </div>
-
-        <!-- 1. Email Sign In Form -->
-        <div id="email-form-container">
-            <form th:action="@{/login}" method="post">
-                <div th:if="${error}" style="color: #ef4444; margin-bottom: 1.2rem; font-weight: 500; font-size: 0.9rem;" th:text="${error}"></div>
-                
-                <div class="form-group">
-                    <label>Email Address / Username</label>
-                    <input type="text" name="username" placeholder="hello@example.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" placeholder="••••••••" required>
-                </div>
-
-                <button type="submit">Sign In</button>
-            </form>
-        </div>
-
-        <!-- 2. Mobile OTP Sign In Form -->
-        <div id="mobile-form-container" style="display: none;">
-            <div id="otp-error" style="color: #ef4444; margin-bottom: 1.2rem; font-weight: 500; font-size: 0.9rem; display: none;"></div>
-            <div id="otp-success" style="color: #10b981; margin-bottom: 1.2rem; font-weight: 500; font-size: 0.9rem; display: none;"></div>
-
-            <!-- Phone Number Input Panel -->
-            <div id="phone-step">
-                <div class="form-group">
-                    <label>Mobile Number</label>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <span style="background: rgba(0,0,0,0.03); border: 1px solid var(--border); padding: 1rem; border-radius: 12px; font-weight: 600; font-size: 1rem; color: var(--text-muted);">+91</span>
-                        <input type="tel" id="otp-phone" placeholder="9876543210" style="flex-grow: 1;" required>
-                    </div>
-                </div>
-                <button type="button" onclick="sendOtpCode()">Send Verification OTP</button>
-            </div>
-
-            <!-- Verification Code Input Panel -->
-            <div id="otp-step" style="display: none;">
-                <div class="form-group">
-                    <label>6-Digit Verification Code</label>
-                    <input type="text" id="otp-code" placeholder="123456" maxlength="6" style="text-align: center; letter-spacing: 0.5rem; font-size: 1.4rem; font-weight: 700;" required>
-                </div>
-                <div style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                    Didn't receive the code? <span id="timer-text" style="font-weight: 600; color: var(--text-main);">Resend in 30s</span>
-                </div>
-                <button type="button" onclick="verifyOtpCode()">Verify & Login</button>
-                <button type="button" onclick="resetOtpSteps()" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border); margin-top: 0.6rem;">Change Mobile Number</button>
-            </div>
-        </div>
-
-        <!-- Google Login Button -->
-        <div style="margin-top: 1.8rem; text-align: center;">
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; position: relative; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <span style="flex-grow: 1; height: 1px; background: rgba(0,0,0,0.08);"></span>
-                Or continue with
-                <span style="flex-grow: 1; height: 1px; background: rgba(0,0,0,0.08);"></span>
-            </p>
-            <a href="/oauth2/authorization/google" class="btn-google" style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 12px;
-                width: 100%;
-                padding: 1.1rem;
-                background: white;
-                border: 1px solid rgba(0,0,0,0.1);
-                border-radius: 12px;
-                color: var(--text-main);
-                font-weight: 500;
-                font-size: 1rem;
-                text-decoration: none;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            ">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" style="width:20px;height:20px;">
-                Sign In with Google
-            </a>
-        </div>
-        
-        <a href="/register" class="footer-link">Don't have an account? <span>Register here</span></a>
+        <!-- Pure Google Login Button -->
+        <a href="/oauth2/authorization/google" class="btn-google">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" style="width:22px;height:22px;">
+            Continue with Google
+        </a>
     </div>
 
-    <!-- Premium Floating Mock SMS Toast Panel -->
-    <div id="mock-sms-toast" style="
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        background: rgba(26, 26, 26, 0.95);
-        backdrop-filter: blur(12px);
-        color: white;
-        padding: 1.3rem 2rem;
-        border-radius: 18px;
-        box-shadow: 0 20px 30px -5px rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.15);
-        z-index: 1000;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        max-width: 380px;
-        transform: translateY(150px);
-        opacity: 0;
-        cursor: pointer;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }">
-        <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.95rem; color: #f59e0b;">
-            <span>🔑 Mock SMS Gateway (Click to Copy)</span>
-        </div>
-        <div id="mock-sms-body" style="font-size: 0.92rem; color: rgba(255,255,255,0.85); line-height: 1.45;">
-            Your verification OTP code for +91 9876543210 is <b>123456</b>.
-        </div>
-        <div style="font-size: 0.72rem; color: rgba(255,255,255,0.4); text-align: right; text-transform: uppercase; letter-spacing: 0.05em;">
-            Click anywhere on this toast to auto-copy
-        </div>
-    </div>
-
-    <script th:inline="javascript">
-        let currentOtp = '';
-        let timerInterval = null;
-        let countdown = 30;
-
-        function switchTab(tab) {
-            const tabEmail = document.getElementById('tab-email');
-            const tabMobile = document.getElementById('tab-mobile');
-            const emailForm = document.getElementById('email-form-container');
-            const mobileForm = document.getElementById('mobile-form-container');
-
-            if (tab === 'email') {
-                tabEmail.style.background = 'var(--text-main)';
-                tabEmail.style.color = 'white';
-                tabMobile.style.background = 'transparent';
-                tabMobile.style.color = 'var(--text-muted)';
-                emailForm.style.display = 'block';
-                mobileForm.style.display = 'none';
-            } else {
-                tabMobile.style.background = 'var(--text-main)';
-                tabMobile.style.color = 'white';
-                tabEmail.style.background = 'transparent';
-                tabEmail.style.color = 'var(--text-muted)';
-                emailForm.style.display = 'none';
-                mobileForm.style.display = 'block';
-            }
-        }
-
-        function showMockSmsToast(phone, otp) {
-            const toast = document.getElementById('mock-sms-toast');
-            const body = document.getElementById('mock-sms-body');
-            currentOtp = otp;
-
-            body.innerHTML = `Your verification OTP code for +91 <b>${phone}</b> is <span style="font-size:1.15rem; color:#f59e0b; font-weight:700; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:6px; margin:0 4px;">${otp}</span>.`;
-            
-            // Slide In
-            toast.style.transform = 'translateY(0)';
-            toast.style.opacity = '1';
-
-            // Auto copy behavior
-            toast.onclick = function() {
-                navigator.clipboard.writeText(otp);
-                body.innerHTML = `<span style="color:#10b981; font-weight:600;">Verification Code ${otp} copied to clipboard!</span>`;
-                setTimeout(() => {
-                    toast.style.transform = 'translateY(150px)';
-                    toast.style.opacity = '0';
-                }, 1200);
-            };
-
-            // Auto dismiss after 15s
-            setTimeout(() => {
-                toast.style.transform = 'translateY(150px)';
-                toast.style.opacity = '0';
-            }, 15000);
-        }
-
-        function sendOtpCode() {
-            const phone = document.getElementById('otp-phone').value;
-            const errorDiv = document.getElementById('otp-error');
-            const successDiv = document.getElementById('otp-success');
-
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-
-            if (!phone || !phone.match(/^\d{10}$/)) {
-                errorDiv.innerText = "Please enter a valid 10-digit mobile number.";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            fetch(`/auth/otp/send?phone=${phone}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "SUCCESS") {
-                        successDiv.innerText = "Verification code generated! Copy from the SMS Toast below.";
-                        successDiv.style.display = 'block';
-                        
-                        document.getElementById('phone-step').style.display = 'none';
-                        document.getElementById('otp-step').style.display = 'block';
-
-                        showMockSmsToast(phone, data.otp);
-                        startTimer();
-                    } else {
-                        errorDiv.innerText = data.message;
-                        errorDiv.style.display = 'block';
-                    }
-                })
-                .catch(err => {
-                    errorDiv.innerText = "Failed to dispatch verification OTP. Try again.";
-                    errorDiv.style.display = 'block';
-                });
-        }
-
-        function startTimer() {
-            countdown = 30;
-            const text = document.getElementById('timer-text');
-            text.innerHTML = `Resend in ${countdown}s`;
-            
-            if (timerInterval) clearInterval(timerInterval);
-            
-            timerInterval = setInterval(() => {
-                countdown--;
-                if (countdown <= 0) {
-                    clearInterval(timerInterval);
-                    text.innerHTML = `<a href="javascript:void(0)" onclick="sendOtpCode()" style="color:var(--text-main); font-weight:600; text-decoration:underline;">Resend Code</a>`;
-                } else {
-                    text.innerHTML = `Resend in ${countdown}s`;
-                }
-            }, 1000);
-        }
-
-        function verifyOtpCode() {
-            const phone = document.getElementById('otp-phone').value;
-            const code = document.getElementById('otp-code').value;
-            const errorDiv = document.getElementById('otp-error');
-
-            errorDiv.style.display = 'none';
-
-            if (!code || code.length !== 6) {
-                errorDiv.innerText = "Please enter the 6-digit verification code.";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('phone', phone);
-            formData.append('otp', code);
-
-            fetch('/auth/otp/verify', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "SUCCESS") {
-                    // Sign-in successful! Redirect to gallery with success trigger
-                    window.location.href = '/?loginSuccess=true';
-                } else {
-                    errorDiv.innerText = data.message;
-                    errorDiv.style.display = 'block';
-                }
-            })
-            .catch(err => {
-                errorDiv.innerText = "Verification failed. Please try again.";
-                errorDiv.style.display = 'block';
-            });
-        }
-
-        function resetOtpSteps() {
-            document.getElementById('phone-step').style.display = 'block';
-            document.getElementById('otp-step').style.display = 'none';
-            document.getElementById('otp-error').style.display = 'none';
-            document.getElementById('otp-success').style.display = 'none';
-            if (timerInterval) clearInterval(timerInterval);
-        }
-    </script>
 </body>
 </html>

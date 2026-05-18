@@ -16,38 +16,8 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @GetMapping("/register")
-    public String registerPage(Model model) {
-        model.addAttribute("user", new User());
-        return "register";
-    }
-
-    @PostMapping("/register")
-    public String register(@ModelAttribute User user, HttpSession session) {
-        User registeredUser = userService.register(user);
-        session.setAttribute("loggedInUser", registeredUser);
-        return "redirect:/";
-    }
-
     @GetMapping("/login")
     public String loginPage() {
-        return "login";
-    }
-
-    @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password,
-                        HttpSession session,
-                        Model model) {
-
-        User loggedInUser = userService.login(username, password);
-
-        if(loggedInUser != null) {
-            session.setAttribute("loggedInUser", loggedInUser);
-            return "redirect:/";
-        }
-
-        model.addAttribute("error", "Invalid username or password");
         return "login";
     }
 

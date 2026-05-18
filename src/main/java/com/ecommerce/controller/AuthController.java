@@ -21,17 +21,20 @@ public class AuthController {
     private final WishlistService wishlistService;
     private final CartService cartService;
     private final String googleClientId;
+    private final java.util.List<String> adminEmails;
 
     public AuthController(UserService userService,
                           OrderService orderService,
                           WishlistService wishlistService,
                           CartService cartService,
-                          @Value("${spring.security.oauth2.client.registration.google.client-id:}") String googleClientId) {
+                          @Value("${spring.security.oauth2.client.registration.google.client-id:}") String googleClientId,
+                          @Value("${app.admin.emails:asmitabiswas220@gmail.com,admin@store.com}") java.util.List<String> adminEmails) {
         this.userService = userService;
         this.orderService = orderService;
         this.wishlistService = wishlistService;
         this.cartService = cartService;
         this.googleClientId = googleClientId;
+        this.adminEmails = adminEmails;
     }
 
     @GetMapping("/login")
@@ -148,6 +151,8 @@ public class AuthController {
         model.addAttribute("lifetimeSpend", lifetimeSpend);
         model.addAttribute("wishlistCount", wishlistService.getWishlistCount());
         model.addAttribute("cartTotalQuantity", cartService.getTotalQuantity());
+        model.addAttribute("cartCount", cartService.getCartItems().size());
+        model.addAttribute("isAdmin", adminEmails.contains(user.getUsername()));
         return "profile";
     }
 

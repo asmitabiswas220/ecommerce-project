@@ -15,6 +15,7 @@ Thumbs.db
 
 # Environment files (optional but recommended)
 .env
+.neon
 
 # SQL dumps (optional)
 *.sql

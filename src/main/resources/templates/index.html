@@ -66,46 +66,6 @@
             white-space: nowrap;
         }
 
-        .nav-search {
-            flex: 1;
-            max-width: 560px;
-            position: relative;
-        }
-
-        .nav-search input {
-            width: 100%;
-            min-height: 44px;
-            border: 1px solid var(--line);
-            border-radius: 999px;
-            background: white;
-            padding: 0 3rem 0 1.2rem;
-            outline: none;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-        }
-
-        .nav-search input:focus { border-color: rgba(23, 23, 23, 0.4); }
-
-        .search-button {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 32px;
-            height: 32px;
-            border: 0;
-            border-radius: 50%;
-            background: var(--ink);
-            color: white;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .search-button svg {
-            width: 16px;
-            height: 16px;
-        }
-
         .nav-links {
             display: flex;
             align-items: center;
@@ -600,7 +560,6 @@
             .hero { grid-template-columns: 1fr; }
             .hero-panel { max-width: 560px; }
             .filter-dock { grid-template-columns: 1fr; }
-            .nav-search { display: none; }
         }
 
         @media (max-width: 720px) {
@@ -624,15 +583,6 @@
 
     <nav class="navbar">
         <a href="/" class="logo">Lumiere</a>
-        <div class="nav-search">
-            <input type="text" id="nav-search-input" placeholder="Search products, categories, gifts..." oninput="syncSearch(this.value)">
-            <button class="search-button" type="button" onclick="focusCollection()" aria-label="Search">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
-                    <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-                </svg>
-            </button>
-        </div>
         <div class="nav-links">
             <a href="/">Home</a>
             <a href="#collection">Shop</a>
@@ -829,9 +779,9 @@
         function syncSearch(value) {
             currentQuery = value.toLowerCase().trim();
             const searchInput = document.getElementById('search-input');
-            const navSearchInput = document.getElementById('nav-search-input');
-            if (document.activeElement !== searchInput) searchInput.value = value;
-            if (document.activeElement !== navSearchInput) navSearchInput.value = value;
+            if (document.activeElement !== searchInput) {
+                searchInput.value = value;
+            }
             filterProducts();
         }
 

@@ -6,13 +6,17 @@ import com.ecommerce.service.CartService;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.service.WishlistService;
+import com.ecommerce.service.RecentlyViewedService;
 
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 public class ProductController {
@@ -28,18 +32,21 @@ public class ProductController {
     private final com.ecommerce.service.FileStorageService fileStorageService;
     private final OrderService orderService;
     private final WishlistService wishlistService;
+    private final RecentlyViewedService recentlyViewedService;
 
     public ProductController(ProductService productService,
             CartService cartService,
             com.ecommerce.service.FileStorageService fileStorageService,
             OrderService orderService,
-            WishlistService wishlistService) {
+            WishlistService wishlistService,
+            RecentlyViewedService recentlyViewedService) {
 
         this.productService = productService;
         this.cartService = cartService;
         this.fileStorageService = fileStorageService;
         this.orderService = orderService;
         this.wishlistService = wishlistService;
+        this.recentlyViewedService = recentlyViewedService;
     }
 
     @ModelAttribute("cartCount")
@@ -71,10 +78,11 @@ public class ProductController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("products", productService.getAllProducts());
-        // Pass wishlist IDs so the heart button can be pre-filled
         java.util.Set<Long> wishlistIds = new java.util.HashSet<>();
         wishlistService.getWishlistItems().forEach(p -> wishlistIds.add(p.getId()));
         model.addAttribute("wishlistIds", wishlistIds);
+        model.addAttribute("recentlyViewed", recentlyViewedService.getRecentItems());
+        model.addAttribute("hasRecentlyViewed", recentlyViewedService.hasItems());
         return "index";
     }
 
@@ -82,9 +90,25 @@ public class ProductController {
     public String productDetail(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id);
         if (product == null) return "redirect:/";
+        // Track recently viewed
+        recentlyViewedService.record(product);
         model.addAttribute("product", product);
         model.addAttribute("inWishlist", wishlistService.isInWishlist(id));
+        // Related products (same category, excluding current)
+        String cat = product.getCategory() != null ? product.getCategory() : "";
+        model.addAttribute("relatedProducts", productService.getRelatedProducts(cat, id));
         return "product-detail";
+    }
+
+    /** AJAX endpoint — returns JSON so the cart badge can update without a page reload */
+    @GetMapping("/cart/ajax-add/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> ajaxAddToCart(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+        if (product != null) cartService.addToCart(product);
+        int newCount = cartService.getCartItems().size();
+        return ResponseEntity.ok(Map.of("success", true, "cartCount", newCount,
+                "productName", product != null ? product.getName() : ""));
     }
 
     @GetMapping("/wishlist")

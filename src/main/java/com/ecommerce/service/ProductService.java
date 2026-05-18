@@ -5,6 +5,7 @@ import com.ecommerce.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -21,6 +22,11 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+    public List<Product> getRelatedProducts(String category, Long excludeId) {
+        return productRepository.findByCategoryIgnoreCaseAndIdNot(category, excludeId)
+                .stream().limit(4).collect(Collectors.toList());
     }
 
     public void addProduct(Product product) {

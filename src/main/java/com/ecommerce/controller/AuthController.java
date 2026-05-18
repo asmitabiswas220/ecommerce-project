@@ -1,7 +1,11 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.model.User;
+import com.ecommerce.model.Order;
+import com.ecommerce.service.CartService;
+import com.ecommerce.service.OrderService;
 import com.ecommerce.service.UserService;
+import com.ecommerce.service.WishlistService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,11 +17,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService userService;
+    private final OrderService orderService;
+    private final WishlistService wishlistService;
+    private final CartService cartService;
     private final String googleClientId;
 
     public AuthController(UserService userService,
+                          OrderService orderService,
+                          WishlistService wishlistService,
+                          CartService cartService,
                           @Value("${spring.security.oauth2.client.registration.google.client-id:}") String googleClientId) {
         this.userService = userService;
+        this.orderService = orderService;
+        this.wishlistService = wishlistService;
+        this.cartService = cartService;
         this.googleClientId = googleClientId;
     }
 
@@ -123,7 +136,18 @@ public class AuthController {
         if (user == null) {
             return "redirect:/login";
         }
+        java.util.List<Order> orders = orderService.getOrdersByUser(user);
+        double lifetimeSpend = orders.stream()
+                .mapToDouble(Order::getTotalAmount)
+                .sum();
+
         model.addAttribute("user", user);
+        model.addAttribute("orders", orders);
+        model.addAttribute("recentOrders", orders.stream().limit(3).toList());
+        model.addAttribute("orderCount", orders.size());
+        model.addAttribute("lifetimeSpend", lifetimeSpend);
+        model.addAttribute("wishlistCount", wishlistService.getWishlistCount());
+        model.addAttribute("cartTotalQuantity", cartService.getTotalQuantity());
         return "profile";
     }
 
@@ -137,6 +161,12 @@ public class AuthController {
         user.setName(updatedUser.getName());
         user.setUsername(updatedUser.getUsername());
         user.setPhoneNumber(updatedUser.getPhoneNumber());
+        user.setAddressLine(updatedUser.getAddressLine());
+        user.setCity(updatedUser.getCity());
+        user.setState(updatedUser.getState());
+        user.setPostalCode(updatedUser.getPostalCode());
+        user.setStylePreference(updatedUser.getStylePreference());
+        user.setMarketingOptIn(updatedUser.isMarketingOptIn());
 
         userService.save(user);
 

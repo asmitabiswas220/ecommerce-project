@@ -18,6 +18,12 @@ public class User {
     private String username;
     private String password;
     private String phoneNumber;
+    private String addressLine;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String stylePreference;
+    private boolean marketingOptIn;
 
     public User() {
     }
@@ -73,5 +79,53 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddressLine() {
+        return addressLine;
+    }
+
+    public void setAddressLine(String addressLine) {
+        this.addressLine = addressLine;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getStylePreference() {
+        return stylePreference;
+    }
+
+    public void setStylePreference(String stylePreference) {
+        this.stylePreference = stylePreference;
+    }
+
+    public boolean isMarketingOptIn() {
+        return marketingOptIn;
+    }
+
+    public void setMarketingOptIn(boolean marketingOptIn) {
+        this.marketingOptIn = marketingOptIn;
     }
 }

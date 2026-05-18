@@ -1,358 +1,599 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumière - Your Cart</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
-        rel="stylesheet">
+    <title>Lumiere - Shopping Bag</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #fafafa;
-            --text-main: #1a1a1a;
-            --text-muted: #666666;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --border: rgba(0, 0, 0, 0.05);
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --bg: #f7f7f4;
+            --surface: #ffffff;
+            --ink: #171717;
+            --muted: #666b70;
+            --line: rgba(23, 23, 23, 0.1);
+            --green: #0d7c66;
+            --rose: #d92d55;
+            --gold: #b98a24;
+            --shadow: 0 18px 48px rgba(24, 30, 27, 0.12);
+            --radius: 8px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
+        .top-strip {
+            background: #17372f;
+            color: white;
+            text-align: center;
+            padding: 0.65rem 5%;
+            font-size: 0.84rem;
+            font-weight: 700;
         }
 
         .navbar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 5%;
-            background: white;
-            border-bottom: 1px solid var(--border);
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 5%;
+            background: rgba(247, 247, 244, 0.92);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(16px);
         }
 
         .logo {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
             font-weight: 600;
-            color: var(--text-main);
-            text-decoration: none;
         }
 
         .nav-links {
             display: flex;
-            gap: 2.5rem;
             align-items: center;
+            gap: 1.1rem;
+            color: var(--muted);
+            font-size: 0.92rem;
+            font-weight: 700;
         }
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
+        .nav-links a:hover { color: var(--ink); }
 
-        .nav-links a:hover {
-            color: var(--text-main);
+        .badge {
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: var(--rose);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 800;
         }
 
         .btn-auth {
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            border: 1px solid var(--text-main);
-            color: var(--text-main);
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
+            border: 1px solid var(--ink);
+            border-radius: 999px;
+            padding: 0.55rem 1rem;
+            color: var(--ink);
         }
 
-        .btn-auth:hover {
-            background: var(--text-main);
-            color: white;
+        .btn-auth.primary { background: var(--ink); color: white; }
+
+        .page {
+            width: min(1180px, 90%);
+            margin: 0 auto;
+            padding: 3.5rem 0 5rem;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 4rem auto;
-            padding: 0 20px;
+        .page-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1.5rem;
         }
 
-        .page-title {
+        .eyebrow {
+            color: var(--green);
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
+            font-size: clamp(2.3rem, 5vw, 4.5rem);
+            line-height: 0.98;
         }
 
-        .cart-grid {
-            background: white;
-            border-radius: 16px;
-            box-shadow: var(--shadow-sm);
-            padding: 2rem;
+        .muted { color: var(--muted); }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 1.2rem;
+            align-items: start;
         }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+        }
+
+        .cart-items { overflow: hidden; }
 
         .cart-item {
-            display: flex;
+            display: grid;
+            grid-template-columns: 120px minmax(0, 1fr) auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--line);
             align-items: center;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border);
-            gap: 2rem;
         }
 
-        .cart-item:last-child {
-            border-bottom: none;
-        }
+        .cart-item:last-child { border-bottom: 0; }
 
         .cart-img {
             width: 120px;
             height: 120px;
             object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .cart-details {
-            flex-grow: 1;
+            border-radius: var(--radius);
+            background: #eeeeea;
         }
 
         .cart-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            display: inline-block;
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 0.35rem;
         }
 
-        .cart-price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-main);
+        .cart-title:hover { color: var(--green); }
+
+        .item-description {
+            color: var(--muted);
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.8rem;
+        }
+
+        .item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .price {
+            font-size: 1.1rem;
+            font-weight: 900;
+        }
+
+        .delivery-chip {
+            color: var(--green);
+            background: #e8f5ef;
+            border-radius: 999px;
+            padding: 0.35rem 0.7rem;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .quantity {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: #fbfbfa;
+            overflow: hidden;
+            min-height: 36px;
+        }
+
+        .quantity a {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: var(--ink);
+        }
+
+        .quantity a:hover { background: #f0f2ef; }
+        .quantity span {
+            min-width: 34px;
+            text-align: center;
+            font-weight: 800;
+            border-left: 1px solid var(--line);
+            border-right: 1px solid var(--line);
+        }
+
+        .item-side {
+            min-width: 132px;
+            display: grid;
+            gap: 0.75rem;
+            justify-items: end;
+        }
+
+        .line-total {
+            font-size: 1.15rem;
+            font-weight: 900;
+            white-space: nowrap;
         }
 
         .btn-remove {
-            padding: 0.6rem 1.2rem;
-            background: #fef2f2;
-            color: #ef4444;
-            border: 1px solid #fee2e2;
-            border-radius: 8px;
+            border: 1px solid #ffd1da;
+            background: #fff5f7;
+            color: var(--rose);
+            border-radius: var(--radius);
+            padding: 0.55rem 0.85rem;
+            font-weight: 800;
             cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            transition: all 0.3s ease;
         }
 
-        .btn-remove:hover {
-            background: #fee2e2;
+        .btn-remove:hover { background: #ffe8ee; }
+
+        .summary {
+            position: sticky;
+            top: 92px;
+            padding: 1rem;
         }
 
-        .checkout-bar {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
+        .summary h2 {
+            font-size: 1.15rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-row {
             display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 2rem;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            color: var(--muted);
+            border-bottom: 1px solid var(--line);
         }
 
-        .btn-checkout {
-            padding: 1rem 2rem;
-            background: var(--text-main);
+        .summary-row strong { color: var(--ink); }
+
+        .grand-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 1rem;
+            padding: 1rem 0;
+        }
+
+        .grand-total strong {
+            font-size: 1.55rem;
+            font-weight: 900;
+        }
+
+        .checkout-button {
+            width: 100%;
+            min-height: 48px;
+            border: 0;
+            border-radius: var(--radius);
+            background: var(--ink);
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 500;
+            font-weight: 900;
             cursor: pointer;
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+        }
+
+        .checkout-button:hover { transform: translateY(-1px); }
+
+        .continue-link {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.9rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        .promo-box {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .promo-box input {
+            min-height: 42px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 0 0.8rem;
+            outline: none;
+        }
+
+        .promo-box button {
+            min-height: 42px;
+            border: 1px solid var(--ink);
+            border-radius: var(--radius);
+            background: white;
+            color: var(--ink);
+            padding: 0 0.85rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .promo-message {
+            display: none;
+            color: var(--green);
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin-top: -0.35rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .trust-list {
+            display: grid;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .trust-item {
+            background: #f1f5f1;
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            color: #24473e;
+            font-size: 0.86rem;
+            font-weight: 800;
         }
 
         .empty-cart {
             text-align: center;
-            padding: 4rem 0;
-            color: var(--text-muted);
-            font-size: 1.1rem;
+            padding: 4rem 1.25rem;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .empty-cart h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            margin-bottom: 0.8rem;
+        }
+
+        .empty-cart p {
+            max-width: 520px;
+            margin: 0 auto 1.4rem;
+            color: var(--muted);
+        }
+
+        .shop-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border-radius: var(--radius);
+            padding: 0 1.2rem;
+            background: var(--ink);
+            color: white;
+            font-weight: 900;
+        }
+
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 50;
+            max-width: calc(100vw - 48px);
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            transform: translateY(130%);
+            opacity: 0;
+            transition: 0.25s ease;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 900px) {
+            .cart-layout { grid-template-columns: 1fr; }
+            .summary { position: static; }
+            .page-head { display: block; }
+        }
+
+        @media (max-width: 680px) {
+            .top-strip { display: none; }
+            .navbar { align-items: flex-start; flex-direction: column; }
+            .nav-links { width: 100%; overflow-x: auto; padding-bottom: 0.2rem; }
+            .page { width: min(100% - 1.4rem, 1180px); padding-top: 2.2rem; }
+            .cart-item {
+                grid-template-columns: 90px 1fr;
+                align-items: start;
+            }
+            .cart-img { width: 90px; height: 90px; }
+            .item-side {
+                grid-column: 1 / -1;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .item-meta { gap: 0.55rem; }
         }
     </style>
 </head>
 
 <body>
+    <div class="top-strip">Secure checkout, easy returns, and free delivery on orders above Rs. 999</div>
+
     <nav class="navbar">
-        <a href="/" class="logo">Lumière</a>
+        <a href="/" class="logo">Lumiere</a>
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="/cart" style="display: inline-flex; align-items: center; gap: 8px; position: relative;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-                Cart
-                <span th:if="${cartCount > 0}" th:text="${cartCount}" style="
-                    background: #ef4444;
-                    color: white;
-                    font-size: 0.72rem;
-                    font-weight: 700;
-                    border-radius: 50%;
-                    min-width: 18px;
-                    height: 18px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    position: absolute;
-                    top: -8px;
-                    right: -12px;
-                    padding: 0 4px;
-                    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
-                    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                ">0</span>
-            </a>
-            <a href="/admin" th:if="${isAdmin}">Admin Dashboard</a>
-
+            <a href="/wishlist">Wishlist <span class="badge" th:if="${wishlistCount > 0}" th:text="${wishlistCount}">0</span></a>
+            <a href="/cart">Cart <span class="badge" th:if="${cartCount > 0}" th:text="${cartCount}">0</span></a>
+            <a href="/admin" th:if="${isAdmin}">Admin</a>
             <th:block th:if="${session.loggedInUser == null}">
                 <a href="/login" class="btn-auth">Sign In</a>
-                <a href="/register" class="btn-auth" style="background:var(--text-main);color:white;">Register</a>
+                <a href="/register" class="btn-auth primary">Register</a>
             </th:block>
-
             <th:block th:unless="${session.loggedInUser == null}">
-                <a href="/orders">My Orders</a>
-                <a href="/profile">My Profile</a>
-                <span style="color:var(--text-main); font-weight:600;">Welcome, <span
-                        th:text="${session.loggedInUser.name}"></span></span>
+                <a href="/orders">Orders</a>
+                <a href="/profile">Profile</a>
                 <a href="/logout" class="btn-auth">Sign Out</a>
             </th:block>
         </div>
     </nav>
 
-    <div class="container">
-        <h1 class="page-title">Your Shopping Cart</h1>
-
-        <div class="cart-grid">
-            <div th:if="${cartItems.empty}" class="empty-cart">
-                Your cart is currently empty.
-                <br><br>
-                <a href="/" style="color:var(--text-main); text-decoration:underline;">Continue Shopping</a>
+    <main class="page">
+        <div class="page-head">
+            <div>
+                <div class="eyebrow">Shopping bag</div>
+                <h1>Your Cart</h1>
             </div>
+            <p class="muted" th:unless="${cartItems.empty}">
+                <span th:text="${cartTotalQuantity}">0</span> items reserved for checkout
+            </p>
+        </div>
 
-            <div class="cart-item" th:each="item : ${cartItems}">
-                <img th:src="${item.product.imageUrl}" alt="Item" class="cart-img">
-                <div class="cart-details">
-                    <h3 class="cart-title" th:text="${item.product.name}"></h3>
-                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;" th:text="${item.product.description}"></p>
-                    <div style="display: flex; align-items: center; gap: 1.5rem; margin-top: 0.8rem;">
-                        <div class="cart-price" th:text="'₹' + ${item.product.price}"></div>
-                        
-                        <!-- Premium Interactive Quantity Adjuster -->
-                        <div style="display: flex; align-items: center; border: 1px solid rgba(0,0,0,0.08); border-radius: 50px; background: #f8fafc; padding: 2px 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-                            <!-- Decrement (-) Button -->
-                            <a th:href="@{/cart/decrement/{id}(id=${item.product.id})}" style="
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                width: 28px;
-                                height: 28px;
-                                border-radius: 50%;
-                                background: white;
-                                color: var(--text-main);
-                                text-decoration: none;
-                                font-weight: 700;
-                                font-size: 1.1rem;
-                                border: 1px solid rgba(0,0,0,0.05);
-                                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-                                transition: all 0.2s ease;
-                            " onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">-</a>
-                            
-                            <!-- Current Quantity Value -->
-                            <span th:text="${item.quantity}" style="
-                                font-weight: 600;
-                                font-size: 0.95rem;
-                                color: var(--text-main);
-                                padding: 0 12px;
-                                min-width: 32px;
-                                text-align: center;
-                            ">1</span>
-                            
-                            <!-- Increment (+) Button -->
-                            <a th:href="@{/cart/increment/{id}(id=${item.product.id})}" style="
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                width: 28px;
-                                height: 28px;
-                                border-radius: 50%;
-                                background: white;
-                                color: var(--text-main);
-                                text-decoration: none;
-                                font-weight: 700;
-                                font-size: 1.1rem;
-                                border: 1px solid rgba(0,0,0,0.05);
-                                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-                                transition: all 0.2s ease;
-                            " onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='white'">+</a>
+        <section th:if="${cartItems.empty}" class="panel empty-cart">
+            <h2>Your bag is waiting.</h2>
+            <p>Browse the collection and add something you love. Saved picks, quick add, and cart totals are ready when you are.</p>
+            <a href="/" class="shop-button">Continue Shopping</a>
+        </section>
+
+        <section th:unless="${cartItems.empty}" class="cart-layout">
+            <div class="panel cart-items">
+                <article class="cart-item" th:each="item : ${cartItems}">
+                    <a th:href="@{/product/{id}(id=${item.product.id})}">
+                        <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="cart-img">
+                    </a>
+
+                    <div>
+                        <a th:href="@{/product/{id}(id=${item.product.id})}" class="cart-title" th:text="${item.product.name}">Product name</a>
+                        <p class="item-description" th:text="${item.product.description}">Product description</p>
+                        <div class="item-meta">
+                            <span class="price" th:text="'Rs. ' + ${item.product.price}">Rs. 0</span>
+                            <span class="delivery-chip">Ships in 24 hours</span>
+                            <div class="quantity" aria-label="Quantity selector">
+                                <a th:href="@{/cart/decrement/{id}(id=${item.product.id})}" aria-label="Decrease quantity">-</a>
+                                <span th:text="${item.quantity}">1</span>
+                                <a th:href="@{/cart/increment/{id}(id=${item.product.id})}" aria-label="Increase quantity">+</a>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="item-side">
+                        <div class="line-total" th:text="'Rs. ' + ${#numbers.formatDecimal(item.product.price * item.quantity, 0, 2)}">Rs. 0</div>
+                        <form th:action="@{/remove-from-cart/{id}(id=${item.product.id})}" method="get">
+                            <button type="submit" class="btn-remove">Remove</button>
+                        </form>
+                    </div>
+                </article>
+            </div>
+
+            <aside class="panel summary">
+                <h2>Order Summary</h2>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong th:text="'Rs. ' + ${#numbers.formatDecimal(cartSubtotal, 0, 2)}">Rs. 0</strong>
                 </div>
-                <form th:action="@{/remove-from-cart/{id}(id=${item.product.id})}" method="get">
-                    <button type="submit" class="btn-remove">Remove</button>
-                </form>
-            </div>
+                <div class="summary-row">
+                    <span>Delivery</span>
+                    <strong th:text="${cartShipping == 0 ? 'Free' : 'Rs. ' + #numbers.formatDecimal(cartShipping, 0, 2)}">Free</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Taxes</span>
+                    <strong>Included</strong>
+                </div>
 
-            <div class="checkout-bar" th:unless="${cartItems.empty}">
-                <button class="btn-checkout" onclick="checkout()">Proceed to Checkout</button>
-            </div>
-        </div>
+                <div class="promo-box">
+                    <input id="promo-code" type="text" placeholder="Promo code">
+                    <button type="button" onclick="applyPromo()">Apply</button>
+                </div>
+                <div id="promo-message" class="promo-message">Promo noted. Final discounts can be added during payment setup.</div>
+
+                <div class="grand-total">
+                    <span>Total</span>
+                    <strong th:text="'Rs. ' + ${#numbers.formatDecimal(cartGrandTotal, 0, 2)}">Rs. 0</strong>
+                </div>
+
+                <button class="checkout-button" type="button" onclick="checkout()">Proceed to Checkout</button>
+                <a href="/" class="continue-link">Continue shopping</a>
+
+                <div class="trust-list">
+                    <div class="trust-item">Secure Razorpay checkout</div>
+                    <div class="trust-item">Free delivery above Rs. 999</div>
+                    <div class="trust-item">7-day easy returns on eligible items</div>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <div id="toast" class="toast">
+        <strong>Cart updated</strong>
+        <div class="muted">Your order summary is ready.</div>
     </div>
+
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
     <script th:inline="javascript">
-        function checkout() {
+        let toastTimer;
 
-            fetch("/checkout/create-order", {
-                method: "POST"
-            })
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function applyPromo() {
+            const input = document.getElementById('promo-code');
+            const message = document.getElementById('promo-message');
+            if (!input.value.trim()) {
+                input.focus();
+                return;
+            }
+            message.style.display = 'block';
+            showToast();
+        }
+
+        function checkout() {
+            fetch("/checkout/create-order", { method: "POST" })
                 .then(res => res.json())
                 .then(order => {
-
-                    var options = {
+                    const options = {
                         "key": [[${razorpayKeyId}]],
                         "amount": order.amount,
                         "currency": "INR",
-                        "name": "Lumière Store",
-                        "description": "Handmade Products Checkout",
+                        "name": "Lumiere Store",
+                        "description": "Curated Products Checkout",
                         "order_id": order.id,
-
                         "handler": function (response) {
-
                             fetch("/checkout/confirm", {
                                 method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
+                                headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(response)
-                            })
-                                .then(() => {
-                                    alert("Payment Successful!");
-                                    window.location.href = "/";
-                                });
-
+                            }).then(() => {
+                                alert("Payment Successful!");
+                                window.location.href = "/";
+                            });
                         }
                     };
 
-                    var rzp = new Razorpay(options);
+                    const rzp = new Razorpay(options);
                     rzp.open();
+                })
+                .catch(() => {
+                    alert("Checkout could not start. Please try again.");
                 });
         }
     </script>
 </body>
-
 </html>

@@ -28,6 +28,18 @@ public class CartService {
         return cartItems;
     }
 
+    public int getTotalQuantity() {
+        return cartItems.stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+    }
+
+    public double getSubtotal() {
+        return cartItems.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+    }
+
     public void removeFromCart(Long id) {
         cartItems.removeIf(item -> item.getProduct().getId().equals(id));
     }

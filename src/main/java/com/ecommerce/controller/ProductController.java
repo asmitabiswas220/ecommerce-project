@@ -148,10 +148,17 @@ public class ProductController {
 
     @GetMapping("/cart")
     public String cart(Model model) {
+        double subtotal = cartService.getSubtotal();
+        double shipping = subtotal > 0 && subtotal < 999 ? 79 : 0;
+        double grandTotal = subtotal + shipping;
 
         model.addAttribute(
                 "cartItems",
                 cartService.getCartItems());
+        model.addAttribute("cartSubtotal", subtotal);
+        model.addAttribute("cartShipping", shipping);
+        model.addAttribute("cartGrandTotal", grandTotal);
+        model.addAttribute("cartTotalQuantity", cartService.getTotalQuantity());
         model.addAttribute(
                 "razorpayKeyId",
                 razorpayKeyId);

@@ -96,6 +96,14 @@
             background: var(--ink);
             color: white;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-button svg {
+            width: 16px;
+            height: 16px;
         }
 
         .nav-links {
@@ -618,7 +626,12 @@
         <a href="/" class="logo">Lumiere</a>
         <div class="nav-search">
             <input type="text" id="nav-search-input" placeholder="Search products, categories, gifts..." oninput="syncSearch(this.value)">
-            <button class="search-button" type="button" onclick="focusCollection()" aria-label="Search">S</button>
+            <button class="search-button" type="button" onclick="focusCollection()" aria-label="Search">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                    <path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+            </button>
         </div>
         <div class="nav-links">
             <a href="/">Home</a>
